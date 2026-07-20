@@ -25,12 +25,49 @@ async function run() {
 
     // Establish and verify connection
 
+
+    // Define your API routes here POST
     app.post('/expense', async (req, res) => {
       console.log(req.body);
         const expense = req.body;
         const result = await client.db("OngreedData").collection("expense").insertOne(expense);
         res.send(result);
         console.log(result);
+    });
+    app.post('/order', async (req, res) => {
+      console.log(req.body);
+        const order = req.body;
+        const result = await client.db("OngreedData").collection("order").insertOne(order);
+        res.send(result);
+        console.log(result);
+    });
+    app.post('/product', async (req, res) => {
+      console.log(req.body);
+        const product = req.body;
+        const result = await client.db("OngreedData").collection("product").insertOne(product);
+        res.send(result);
+        console.log(result);
+    });
+
+    app.get('/expense', async (req, res) => {
+      const result = await client.db("OngreedData").collection("expense").find().toArray();
+      res.send(result);
+    });
+
+    app.get('/order', async (req, res) => {
+      const result = await client.db("OngreedData").collection("order").find().toArray();
+      res.send(result);
+    });
+    app.get('/product', async (req, res) => {
+      const result = await client.db("OngreedData").collection("product").find().toArray();
+      res.send(result);
+    });
+
+    app.patch('/order/:id', async (req, res) => {
+      const id = req.params.id;
+      const updatedOrder = req.body;
+      const result = await client.db("OngreedData").collection("order").updateOne({ _id: id }, { $set: updatedOrder });
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
