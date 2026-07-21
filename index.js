@@ -48,6 +48,13 @@ async function run() {
         res.send(result);
         console.log(result);
     });
+    app.post('/investment', async (req, res) => {
+      console.log(req.body);
+        const investment = req.body;
+        const result = await client.db("OngreedData").collection("investment").insertOne(investment);
+        res.send(result);
+        console.log(result);
+    });
 
     app.get('/expense', async (req, res) => {
       const result = await client.db("OngreedData").collection("expense").find().toArray();
@@ -62,11 +69,22 @@ async function run() {
       const result = await client.db("OngreedData").collection("product").find().toArray();
       res.send(result);
     });
+    app.get('/investment', async (req, res) => {
+      const result = await client.db("OngreedData").collection("investment").find().toArray();
+      res.send(result);
+    });
 
     app.patch('/order/:id', async (req, res) => {
       const id = req.params.id;
       const updatedOrder = req.body;
       const result = await client.db("OngreedData").collection("order").updateOne({ _id: id }, { $set: updatedOrder });
+      res.send(result);
+    });
+
+    app.patch('/investment/:id', async (req, res) => {
+      const id = req.params.id;
+      const updatedInvestment = req.body;
+      const result = await client.db("OngreedData").collection("investment").updateOne({ _id: id }, { $set: updatedInvestment });
       res.send(result);
     });
 
