@@ -1,14 +1,18 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+require('dotenv').config();
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
-// Note: It's best practice to hide credentials using environment variables (process.env)
-const uri = "mongodb+srv://ongreed:hx9fA7yzP7yDZ6Nf@ongreeddata.hdfsbys.mongodb.net/?appName=OngreedData";
+const uri = process.env.MONGODB_URI;
+if (!uri) {
+  console.error('Missing MONGODB_URI environment variable. Add it to .env or your environment.');
+  process.exit(1);
+}
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -28,32 +32,29 @@ async function run() {
 
     // Define your API routes here POST
     app.post('/expense', async (req, res) => {
-      console.log(req.body);
         const expense = req.body;
         const result = await client.db("OngreedData").collection("expense").insertOne(expense);
         res.send(result);
-        console.log(result);
     });
     app.post('/order', async (req, res) => {
-      console.log(req.body);
         const order = req.body;
         const result = await client.db("OngreedData").collection("order").insertOne(order);
         res.send(result);
-        console.log(result);
     });
     app.post('/product', async (req, res) => {
-      console.log(req.body);
         const product = req.body;
         const result = await client.db("OngreedData").collection("product").insertOne(product);
         res.send(result);
-        console.log(result);
     });
     app.post('/investment', async (req, res) => {
-      console.log(req.body);
         const investment = req.body;
         const result = await client.db("OngreedData").collection("investment").insertOne(investment);
         res.send(result);
-        console.log(result);
+    });
+    app.post('/stock', async (req, res) => {
+        const stock = req.body;
+        const result = await client.db("OngreedData").collection("stock").insertOne(stock);
+        res.send(result);
     });
 
     app.get('/expense', async (req, res) => {
@@ -73,6 +74,10 @@ async function run() {
       const result = await client.db("OngreedData").collection("investment").find().toArray();
       res.send(result);
     });
+    app.get('/stock', async (req, res) => {
+      const result = await client.db("OngreedData").collection("stock").find().toArray();
+      res.send(result);
+    });
 
     app.patch('/order/:id', async (req, res) => {
       const id = req.params.id;
@@ -81,12 +86,15 @@ async function run() {
       res.send(result);
     });
 
-    app.patch('/investment/:id', async (req, res) => {
-      const id = req.params.id;
-      const updatedInvestment = req.body;
-      const result = await client.db("OngreedData").collection("investment").updateOne({ _id: id }, { $set: updatedInvestment });
-      res.send(result);
-    });
+app.patch('/stock/:id', async (req, res) => {
+  const id = req.params.id;
+  const updatedStock = req.body;
+  const result = await client.db("OngreedData").collection("stock").updateOne(
+    { _id: new ObjectId(id) },
+    { $set: updatedStock }
+  );
+  res.send(result);
+});
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
