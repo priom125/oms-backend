@@ -98,9 +98,9 @@ app.patch('/stock/:id', async (req, res) => {
 
 
 
-app.delete('/stock/:id', async (req, res) => {
+app.delete('/product/:id', async (req, res) => {
   const id = req.params.id;
-  const result = await client.db("OngreedData").collection("stock").deleteOne({ _id: new ObjectId(id) });
+  const result = await client.db("OngreedData").collection("product").deleteOne({ _id: new ObjectId(id) });
   res.send(result);
 });
 
