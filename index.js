@@ -96,6 +96,14 @@ app.patch('/stock/:id', async (req, res) => {
   res.send(result);
 });
 
+
+
+app.delete('/stock/:id', async (req, res) => {
+  const id = req.params.id;
+  const result = await client.db("OngreedData").collection("stock").deleteOne({ _id: new ObjectId(id) });
+  res.send(result);
+});
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Connected successfully to MongoDB!");
