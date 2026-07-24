@@ -98,10 +98,35 @@ app.patch('/stock/:id', async (req, res) => {
 
 
 
-app.delete('/product/:id', async (req, res) => {
-  const id = req.params.id;
-  const result = await client.db("OngreedData").collection("product").deleteOne({ _id: new ObjectId(id) });
-  res.send(result);
+// ✅ CORRECT
+import mongoose from 'mongoose';
+
+app.delete('/product/:identifier', async (req, res) => {
+  try {
+    const { identifier } = req.params;
+    let deletedProduct;
+
+    // Check if identifier is a valid 24-character hex ObjectId
+    if (mongoose.Types.ObjectId.isValid(identifier)) {
+      deletedProduct = await Product.findByIdAndDelete(identifier);
+    } else {
+      // Decode URI components in case the product name has spaces/special characters
+      const productName = decodeURIComponent(identifier);
+      deletedProduct = await Product.findOneAndDelete({ name: productName });
+    }
+
+    if (!deletedProduct) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Also delete associated stock items if applicable
+    await Stock.deleteMany({ name: deletedProduct.name });
+
+    return res.status(200).json({ message: 'Product and associated stock deleted' });
+  } catch (error) {
+    console.error('Delete product error:', error);
+    return res.status(500).json({ message: error.message || 'Internal Server Error' });
+  }
 });
 
     // Send a ping to confirm a successful connection
